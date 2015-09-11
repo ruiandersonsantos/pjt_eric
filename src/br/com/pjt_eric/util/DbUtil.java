@@ -6,9 +6,12 @@
 package br.com.pjt_eric.util;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -55,9 +58,24 @@ public class DbUtil {
             if (Files.exists(path)) {
                 JOptionPane.showMessageDialog(null, "Arquivo de conexão criado com sucesso!");
                 retorno = lerArquivoDeConexao();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "Problemas na criação do arquivo de conexão. Tente novamente!");
             }
+        }
+
+        return retorno;
+    }
+
+    public static String criptografaSenha(String senha) {
+        String retorno = "";
+        try {
+
+            MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
+            byte messageDigest[] = algorithm.digest(senha.getBytes("UTF-8"));
+            retorno = new String(messageDigest);
+
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+            Logger.getLogger(DbUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return retorno;

@@ -11,6 +11,9 @@ import br.com.pjt_eric.util.Conexao;
 import br.com.pjt_eric.util.DbUtil;
 import java.awt.HeadlessException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -23,13 +26,33 @@ import javax.swing.JOptionPane;
  */
 public class Teste {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, NoSuchAlgorithmException {
+        //criaArquivoConexao();
+        // lerArquivoConexao();
+        // inserirUsuario();
+        //logar();
+        
+         String senha = "e";
+        try {
 
-       //criaArquivoConexao();
-        
-       // lerArquivoConexao();
-        
-       inserirUsuario();
+            MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
+            byte messageDigest[] = algorithm.digest(senha.getBytes("UTF-8"));
+            System.out.println(new String(messageDigest).length());
+
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(DbUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+    }
+
+    private static void logar() throws IOException {
+
+        Conexao conect = new Conexao();
+        Connection con = conect.GetConnection();
+        Usuario usr = UsuarioSRV.efetuaLogin(con, "rui", "123");
+
+        System.out.println(usr.getNome());
     }
 
     private static void lerArquivoConexao() throws IOException {
@@ -37,11 +60,10 @@ public class Teste {
     }
 
     private static void criaArquivoConexao() throws HeadlessException {
-     
-        
+
         String caminhoBD = "C:/Projeto_eric/bd/banco.accdb";
         try {
-            if(DbUtil.criarArquivoDeConexao(caminhoBD)){
+            if (DbUtil.criarArquivoDeConexao(caminhoBD)) {
                 JOptionPane.showMessageDialog(null, "Arqui de conexão criado com sucesso!");
             }
         } catch (IOException ex) {
@@ -56,7 +78,7 @@ public class Teste {
 
         usuario.setLogin("rui");
         usuario.setNome("Rui Anderson");
-        usuario.setSenha("123");
+        usuario.setSenha(DbUtil.criptografaSenha("123"));
 
         int chave = 0;
         chave = UsuarioSRV.inserirUsuario(usuario, con);

@@ -6,7 +6,7 @@
 package br.com.pjt_eric.dao;
 
 import br.com.pjt_eric.model.Usuario;
-import br.com.pjt_eric.util.Conexao;
+import br.com.pjt_eric.util.DbUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,6 +54,31 @@ public class UsuarioDAO {
         }
 
         return retorno;
+    }
+
+    public Usuario efetuarLogin(Connection con, String login, String senha) {
+        Usuario usuario = new Usuario();
+        try {
+            PreparedStatement ps;
+
+            ps = (PreparedStatement) con.prepareStatement("select * from usuario where login = ? and senha = ?");
+
+            ps.setString(1, login);
+            ps.setString(2, DbUtil.criptografaSenha(senha));
+
+            ResultSet rs = ps.executeQuery();
+            
+            if(rs.next()){
+                usuario.setId(rs.getInt("id"));
+                usuario.setLogin(rs.getString("login"));
+                usuario.setNome(rs.getString("nome"));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return usuario;
     }
 
 }

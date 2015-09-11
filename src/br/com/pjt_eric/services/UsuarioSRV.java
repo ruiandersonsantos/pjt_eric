@@ -28,4 +28,11 @@ public class UsuarioSRV {
         
     }
     
+    public static Usuario efetuaLogin(Connection con, String login, String senha){
+        
+        UsuarioDAO dao = new UsuarioDAO();
+        return dao.efetuarLogin(con, login, senha);
+        
+    }
+    
 }
